@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "jsreport": "^2.3.0"
+    "jsreport": "^2.3.0",
+    "jsreport-ejs": "^2.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",

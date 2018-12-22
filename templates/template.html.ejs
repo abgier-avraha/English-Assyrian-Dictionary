@@ -1,0 +1,63 @@
+<% wordGroups.forEach(function(wordGroup, letterIndex) { %>
+    <div class="body">
+        <h1 class="letter-heading"><%= wordGroup.letter %></h1>
+        
+        <% wordGroup.wordChunks.forEach(function(wordChunk, chunkIndex) { %>
+
+            <div class="word-chunk">
+                <h2 class="word-heading"> <%= wordChunk.heading %> </h2>
+                <% wordChunk.words.forEach(function(word) { %>
+                    <p class="word-row">
+                        <%= word.english %>
+                        <span class="syriac"> <%= word.syriac %> </span>
+                    </p>
+                <% }); %>
+            </div>
+                
+            <% if (chunkIndex === wordGroup.wordChunks.length - 1 && letterIndex === wordGroups.length - 1) { %>
+            <% } else { %>
+                <div class="page-break"></div>
+            <% } %>
+
+        <% }); %>
+        
+    </div>
+<% }); %>
+
+<style>
+    .page-break { display: block; page-break-before: always; }
+
+    .letter-heading {
+        font-size: 0.85em,
+    }
+
+    .word-heading {
+        font-size: 0.65em,
+    }
+
+    .word-chunk:first-of-type {
+        padding: 0px;
+    }
+
+    .word-chunk {
+        padding: 50px 0px;
+    }
+
+    .body {
+        padding: 20px 50px;
+    }
+
+    .word-row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @font-face {
+      font-family: 'East Syriac Marcus Regular';
+      src: url({templates/fonts/EASTSM.TTF});
+    }
+
+    .syriac {
+        font-family: 'East Syriac Marcus Regular';
+    }
+</style>
