@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "csvtojson": "^2.0.8",
     "jsreport": "^2.3.0",
     "jsreport-ejs": "^2.0.1"
   },

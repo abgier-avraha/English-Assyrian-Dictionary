@@ -9,7 +9,7 @@
                 <% wordChunk.words.forEach(function(word) { %>
                     <p class="word-row">
                         <%= word.english %>
-                        <span class="syriac"> <%= word.syriac %> </span>
+                        <span class="syriac"> <%= word.syriac.replace('+', ',') %> </span>
                     </p>
                 <% }); %>
             </div>
@@ -50,6 +50,7 @@
     .word-row {
         display: flex;
         justify-content: space-between;
+        font-size: 1em;
     }
 
     @font-face {

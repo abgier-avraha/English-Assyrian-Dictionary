@@ -1,9 +1,12 @@
-const jsreport = require("jsreport");
-const fs = require('fs');
+const JSreport = require("jsreport");
+const FS = require('fs');
+const CSVToJSON = require("csvtojson");
+
+const sourceCSV = "source.csv";
 const outputFolder = 'output/';
 const outputFile = 'dictionary.pdf';
 const template = "templates/template.html.ejs";
-const wordsPerPage = 30;
+const wordsPerPage = 29;
 
 function chunk (arr, len) {
 
@@ -15,7 +18,7 @@ function chunk (arr, len) {
     chunkLength = i === 0 ? len - 1 : len;
     chunks.push(
       {
-        heading: arr[0].english,
+        heading: arr[i].english.substring(0, 3).toUpperCase(),
         words: arr.slice(i, i += chunkLength),
       }
     );
@@ -24,162 +27,42 @@ function chunk (arr, len) {
   return chunks;
 }
 
-fs.readFile(template, (err, data) => {
-  createReport(data.toString());
+// Start
+FS.readFile(template, async (err, templateFile) => {
+  const dictionaryJSON = await CSVToJSON().fromFile(sourceCSV)
+
+  let sortedByLetter = {};
+  dictionaryJSON.forEach(wordRow => {
+    for (i = 0; i < 26; i++) {
+      const chr = String.fromCharCode(97 + i).toUpperCase();
+
+      const existingArray = sortedByLetter[chr] || [];
+      if (wordRow.english[0].toUpperCase() === chr) {
+        sortedByLetter[chr] = [...existingArray, wordRow];
+      }
+    }
+  });
+
+  let wordGroups = [];
+  for (i = 0; i < 26; i++) {
+    const chr = String.fromCharCode(97 + i).toUpperCase();
+    if (sortedByLetter[chr] === undefined) {
+      continue;
+    }
+    wordGroups.push({
+      letter: chr,
+      wordChunks: chunk(sortedByLetter[chr], wordsPerPage),
+    });
+  }
+
+  createReport(templateFile.toString(), wordGroups);
 });
 
-const a = [
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'alpha', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'apple', syriac: 'ܐܣܛܪܢܓܠ'},
-{english: 'adam', syriac: 'ܐܣܛܪܢܓܠ'},
-]
-
-async function createReport(template) {
+async function createReport(template, wordGroups) {
   try {
-    const output = await jsreport.render({
+    const output = await JSreport.render({
       data: {
-        wordGroups: [
-          {
-            letter: 'a'.toUpperCase(),
-            wordChunks: chunk(a, wordsPerPage),
-          },
-          {
-            letter: 'b'.toUpperCase(),
-            wordChunks: chunk(a, wordsPerPage),
-          },
-        ]
+        wordGroups: wordGroups,
       },
       template: {
         content: template.replace(/ }}/g, "}}").replace(/{{ /g, "{{"),
@@ -192,10 +75,10 @@ async function createReport(template) {
       },
     })
 
-    if (!fs.existsSync(outputFolder)){
-      fs.mkdirSync(outputFolder);
+    if (!FS.existsSync(outputFolder)){
+      FS.mkdirSync(outputFolder);
     }
-    fs.writeFile(`${outputFolder}${outputFile}`, output.content, function(err, data){
+    FS.writeFile(`${outputFolder}${outputFile}`, output.content, function(err, data){
       if (err) console.log(err);
       console.log("Successfully Written to File.");
     });
