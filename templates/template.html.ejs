@@ -1,23 +1,32 @@
 <% wordGroups.forEach(function(wordGroup, letterIndex) { %>
-    <div class="body">
-        <h1 class="letter-heading"><%= wordGroup.letter %></h1>
         
         <% wordGroup.wordChunks.forEach(function(wordChunk, chunkIndex) { %>
 
-            <div class="word-chunk">
-                <h2 class="word-heading"> <%= wordChunk.heading %> </h2>
-                <% wordChunk.words.forEach(function(word) { %>
-                    <p class="word-row">
-                        <%= word.english %>
-                        <span class="syriac"> <%= word.syriac.replace('+', ',') %> </span>
-                    </p>
-                <% }); %>
+            <div class="page">
+            
+                <% if (chunkIndex === 0) { %>
+                    <h1 class="letter-heading"><%= wordGroup.letter %></h1>
+                <% } %>
+            
+                <div class="word-chunk">
+                    <% if (chunkIndex !== 0) { %>
+                        <h2 class="word-heading"> <%= wordChunk.heading %> </h2>
+                    <% } %>
+                    <% wordChunk.words.forEach(function(word) { %>
+                        <p class="word-row">
+                            <span class="english"> <%= word.english %> </span>
+                            <span class="syriac"> <%= word.syriac.replace(/\+/g, ',') %> </span>
+                        </p>
+                    <% }); %>
+                </div>
+
+                <% if (chunkIndex === wordGroup.wordChunks.length - 1) { %>
+                    <span class="letter-end"> END </span>
+                <% } %>
+                    
+                <div class="footer"> <div> <%= chunkIndex + 1 %> </div> </div>
+
             </div>
-                
-            <% if (chunkIndex === wordGroup.wordChunks.length - 1 && letterIndex === wordGroups.length - 1) { %>
-            <% } else { %>
-                <div class="page-break"></div>
-            <% } %>
 
         <% }); %>
         
@@ -25,14 +34,31 @@
 <% }); %>
 
 <style>
-    .page-break { display: block; page-break-before: always; }
+    .page {
+        display: flex;
+        flex-direction: column;
+        page-break-after: always;
+        padding: 50px;
+        height: 1060px;
+    }
+
+    .letter-end {
+        font-size: 1.5em;
+        text-align: center;
+        margin-top: 20px;
+        font-weight: 600;
+    }
 
     .letter-heading {
-        font-size: 0.85em,
+        font-size: 3em;
+        text-align: center;
+        margin-top: 0px;
     }
 
     .word-heading {
-        font-size: 0.65em,
+        font-size: 1.5em;
+        text-decoration: underline;
+        margin-bottom: 40px;
     }
 
     .word-chunk:first-of-type {
@@ -43,14 +69,19 @@
         padding: 50px 0px;
     }
 
-    .body {
-        padding: 20px 50px;
-    }
-
     .word-row {
         display: flex;
         justify-content: space-between;
-        font-size: 1em;
+    }
+
+    .footer {
+        font-size: 1.5em;
+        font-weight: 600;
+        text-align: center;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
     }
 
     @font-face {
@@ -58,8 +89,12 @@
       src: url({templates/fonts/EASTSM.TTF});
     }
 
+    .english {
+        font-size: 1.5em;
+    }
     .syriac {
         font-family: 'East Syriac Marcus Regular';
         direction: rtl;
+        font-size: 1.8em;
     }
 </style>

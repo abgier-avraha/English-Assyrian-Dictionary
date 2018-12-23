@@ -6,7 +6,20 @@ const sourceCSV = "source.csv";
 const outputFolder = 'output/';
 const outputFile = 'dictionary.pdf';
 const template = "templates/template.html.ejs";
-const wordsPerPage = 29;
+const maxWordsPerPage = 18;
+
+
+start();
+
+function start() {
+  FS.readFile(template, async (err, templateFile) => {
+    const dictionaryJSON = await CSVToJSON().fromFile(sourceCSV);
+    const sortedByLetter = sortIntoLettersObject(dictionaryJSON);
+    const wordGroups = sortIntoWordGroups(sortedByLetter);
+
+    createReport(templateFile.toString(), wordGroups);
+  });
+}
 
 function chunk (arr, len) {
 
@@ -15,7 +28,7 @@ function chunk (arr, len) {
       n = arr.length;
 
   while (i < n) {
-    chunkLength = i === 0 ? len - 1 : len;
+    chunkLength = len;
     chunks.push(
       {
         heading: arr[i].english.substring(0, 3).toUpperCase(),
@@ -27,11 +40,8 @@ function chunk (arr, len) {
   return chunks;
 }
 
-// Start
-FS.readFile(template, async (err, templateFile) => {
-  const dictionaryJSON = await CSVToJSON().fromFile(sourceCSV)
-
-  let sortedByLetter = {};
+function sortIntoLettersObject(dictionaryJSON) {
+  const sortedByLetter = {};
   dictionaryJSON.forEach(wordRow => {
     for (i = 0; i < 26; i++) {
       const chr = String.fromCharCode(97 + i).toUpperCase();
@@ -43,7 +53,11 @@ FS.readFile(template, async (err, templateFile) => {
     }
   });
 
-  let wordGroups = [];
+  return sortedByLetter;
+}
+
+function sortIntoWordGroups(sortedByLetter) {
+  const wordGroups = [];
   for (i = 0; i < 26; i++) {
     const chr = String.fromCharCode(97 + i).toUpperCase();
     if (sortedByLetter[chr] === undefined) {
@@ -51,12 +65,16 @@ FS.readFile(template, async (err, templateFile) => {
     }
     wordGroups.push({
       letter: chr,
-      wordChunks: chunk(sortedByLetter[chr], wordsPerPage),
+      wordChunks:
+        chunk(sortedByLetter[chr].sort((a, b) => {
+          return a.english.localeCompare(b.english);
+        }),
+        maxWordsPerPage
+      ),
     });
   }
-
-  createReport(templateFile.toString(), wordGroups);
-});
+  return wordGroups;
+}
 
 async function createReport(template, wordGroups) {
   try {
@@ -80,11 +98,10 @@ async function createReport(template, wordGroups) {
     }
     FS.writeFile(`${outputFolder}${outputFile}`, output.content, function(err, data){
       if (err) console.log(err);
-      console.log("Successfully Written to File.");
+      console.log(`Successfully generated file: ${outputFolder}${outputFile}.`);
     });
   }
   catch (e) {
-    
     console.log(e);
   }
 }
