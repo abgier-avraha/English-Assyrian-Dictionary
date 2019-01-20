@@ -1,3 +1,5 @@
+<% pageIndex = 1 %>
+
 <% wordGroups.forEach(function(wordGroup, letterIndex) { %>
         
         <% wordGroup.wordChunks.forEach(function(wordChunk, chunkIndex) { %>
@@ -24,7 +26,7 @@
                     <span class="letter-end"> END </span>
                 <% } %>
                     
-                <div class="footer"> <div> <%= chunkIndex + 1 %> </div> </div>
+                <div class="footer"> <div> <%= pageIndex++ %> </div> </div>
 
             </div>
 
