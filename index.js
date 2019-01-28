@@ -49,6 +49,7 @@ function sortIntoLettersObject(dictionaryJSON) {
       const existingArray = sortedByLetter[chr] || [];
       if (wordRow.english[0].toUpperCase() === chr) {
         sortedByLetter[chr] = [...existingArray, wordRow];
+        console.log(wordRow)
       }
     }
   });

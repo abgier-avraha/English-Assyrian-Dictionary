@@ -16,7 +16,7 @@
                     <% } %>
                     <% wordChunk.words.forEach(function(word) { %>
                         <p class="word-row">
-                            <span class="english"> <%= word.english %> </span>
+                            <span class="english"> <%= word.english %>  <span class="grammar"> <%= word.grammar %> </span> </span>
                             <span class="syriac"> <%= word.syriac.replace(/\+/g, ',') %> </span>
                         </p>
                     <% }); %>
@@ -93,6 +93,11 @@
 
     .english {
         font-size: 1.5em;
+    }
+    .grammar {
+        font-style: oblique;
+        font-weight: bold;
+        margin-left: 1em;
     }
     .syriac {
         font-family: 'East Syriac Marcus Regular';
