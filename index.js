@@ -6,7 +6,7 @@ const sourceCSV = "source.csv";
 const outputFolder = 'output/';
 const outputFile = 'dictionary.pdf';
 const template = "templates/template.html.ejs";
-const maxWordsPerPage = 18;
+const maxWordsPerPage = 19;
 
 
 start();
