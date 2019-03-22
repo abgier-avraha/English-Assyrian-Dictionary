@@ -6,7 +6,7 @@ const sourceCSV = "source.csv";
 const outputFolder = 'output/';
 const outputFile = 'dictionary.pdf';
 const template = "templates/template.html.ejs";
-const maxWordsPerPage = 19;
+const maxWordsPerPage = 17;
 
 
 start();
@@ -88,8 +88,8 @@ async function createReport(template, wordGroups) {
         recipe: "chrome-pdf",
         engine: "ejs",
         chrome: {
-          width: "840px",
-          height: "1190px",
+          width: "800px",
+          height: "1131px",
         }
       },
     })
